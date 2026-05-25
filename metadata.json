@@ -1,0 +1,6 @@
+{
+  "name": "Curvalab",
+  "description": "A dark cinematic single-page hero section for Curvalab featuring a looping background video, liquid glass UI elements, and persistent newsletter signup.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

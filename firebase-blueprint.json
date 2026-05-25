@@ -1,0 +1,31 @@
+{
+  "entities": {
+    "Subscription": {
+      "title": "Subscription",
+      "description": "An email address subscribed to the newsletter.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "The subscriber's email address."
+        },
+        "createdAt": {
+          "type": "object",
+          "description": "The Firebase ServerTimestamp when they subscribed."
+        },
+        "status": {
+          "type": "string",
+          "description": "Subscribed status",
+          "enum": ["active", "unsubscribed"]
+        }
+      },
+      "required": ["email", "createdAt", "status"]
+    }
+  },
+  "firestore": {
+    "/subscriptions/{subscriptionId}": {
+      "schema": "Subscription",
+      "description": "Newsletter email subscriptions"
+    }
+  }
+}

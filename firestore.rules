@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global Safety Net: Default Deny All
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 2. Global Helper Primitives
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.email == 'mrx.exeaep@gmail.com' || 
+        request.auth.token.email == 'mniabyss@gmail.com'
+      );
+    }
+
+    // 3. Subscription Schema Validation Helper
+    function isValidSubscription(sub) {
+      return sub.keys().hasAll(['email', 'createdAt', 'status'])
+        && sub.keys().size() == 3
+        && sub.email is string
+        && sub.email.size() >= 3
+        && sub.email.size() <= 254
+        && sub.createdAt == request.time
+        && sub.status == 'active';
+    }
+
+    // 4. Subscriptions Collection Rules
+    match /subscriptions/{subscriptionId} {
+      // Allow creation by anyone (unauthenticated email signup is allowed for a newsletter)
+      // but enforce strict validation of fields, types, and sizes.
+      allow create: if isValidId(subscriptionId) && isValidSubscription(incoming());
+
+      // Admins are allowed to read the subscription list
+      allow read, get, list: if isAdmin();
+
+      // Allow admin updates and purging (deleting) of subscriptions
+      allow update, delete: if isAdmin();
+    }
+  }
+}
